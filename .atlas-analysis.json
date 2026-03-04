@@ -1,0 +1,60 @@
+{
+  "projectType": "api-service",
+  "projectName": "TV Quotes API",
+  "projectDescription": "Get over 100,000 quotes from various TV shows via a fast, free REST API.",
+  "theme": "palm",
+  "primaryColor": "#9333ea",
+  "lightColor": "#a855f7",
+  "darkColor": "#7e22ce",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quickstart"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/filtering",
+              "guides/examples"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Endpoints",
+            "pages": [
+              "api/overview",
+              "api/stats",
+              "api/shows",
+              "api/random-quote",
+              "api/multiple-quotes"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Access 100,000+ TV show quotes from 30+ popular series",
+    "Fast random quote retrieval with O(1) performance",
+    "Filter by TV show and quote length",
+    "RESTful JSON API with no authentication required",
+    "Serverless architecture on Cloudflare Workers"
+  ],
+  "publicApiSurface": [
+    "GET /quotes/stats",
+    "GET /quotes/shows",
+    "GET /quotes",
+    "GET /quotes/:number"
+  ]
+}
