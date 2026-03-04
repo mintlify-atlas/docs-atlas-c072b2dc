@@ -13,6 +13,21 @@ All API requests should be made to:
 https://quotes.jepcd.com
 ```
 
+### Root endpoint
+
+The root endpoint returns basic API information:
+
+```bash curl
+curl https://quotes.jepcd.com/
+```
+
+```json Response
+{
+  "name": "TV Quotes API",
+  "docs": "https://github.com/jepcd/tv-quotes-api"
+}
+```
+
 ## Authentication
 
 No authentication is required. All endpoints are publicly accessible.
