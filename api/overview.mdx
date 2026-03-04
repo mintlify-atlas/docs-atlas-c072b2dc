@@ -1,0 +1,69 @@
+---
+title: API Overview
+description: Learn about the TV Quotes API base URL, authentication, and response format
+---
+
+The TV Quotes API provides access to over 100,000 quotes from 30+ popular TV shows. The API is free to use and requires no authentication.
+
+## Base URL
+
+All API requests should be made to:
+
+```
+https://quotes.jepcd.com
+```
+
+## Authentication
+
+No authentication is required. All endpoints are publicly accessible.
+
+## Response format
+
+All responses are returned in JSON format. The API returns appropriate HTTP status codes:
+
+- `200` - Successful request
+- `404` - No quotes found for the specified filters
+
+## Rate limiting
+
+There are currently no rate limits imposed on the API.
+
+## Show names
+
+Show names are case insensitive. You can use any capitalization when filtering by show (e.g., `breaking bad`, `Breaking Bad`, or `BREAKING BAD` all work).
+
+## Available shows
+
+The API currently includes quotes from these shows:
+
+- How I Met Your Mother
+- The Middle
+- New Girl
+- Suits
+- 3rd Rock from the Sun
+- Arrested Development
+- Malcolm in the Middle
+- Monk
+- The Fresh Prince of Bel-Air
+- Parks And Recreation
+- Home Improvement
+- Cheers
+- Modern Family
+- Seinfeld
+- The Office
+- The Goldbergs
+- Gilmore Girls
+- Frasier
+- Breaking Bad
+- Scrubs
+- Boy Meets World
+- Everybody Loves Raymond
+- The Good Place
+- Brooklyn Nine-Nine
+- Everybody Hates Chris
+- Lucifer
+- Schitt's Creek
+- Derry Girls
+- Friends
+- Stranger Things
+- The Golden Girls

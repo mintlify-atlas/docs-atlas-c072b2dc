@@ -1,0 +1,98 @@
+---
+title: Get multiple random quotes
+description: Retrieve multiple random quotes, optionally filtered by show or length
+---
+
+Get multiple random quotes from the database. You can optionally filter by TV show and/or request only short (one-line) quotes.
+
+## Endpoint
+
+```
+GET /quotes/:number
+```
+
+## Path parameters
+
+<ParamField path="number" type="number" required>
+  The number of random quotes to retrieve. Maximum of 10 quotes per request.
+</ParamField>
+
+## Query parameters
+
+<ParamField query="show" type="string" optional>
+  Filter quotes by TV show name (case insensitive). If not specified, random quotes from any show are returned.
+</ParamField>
+
+<ParamField query="short" type="boolean" optional default="false">
+  If set to `true`, returns only one-line quotes. Defaults to `false`.
+</ParamField>
+
+## Response
+
+Returns an array of quote objects.
+
+<ResponseField name="[].show" type="string" required>
+  The name of the TV show
+</ResponseField>
+
+<ResponseField name="[].character" type="string" required>
+  The character who said the quote
+</ResponseField>
+
+<ResponseField name="[].text" type="string" required>
+  The quote text
+</ResponseField>
+
+## Example requests
+
+### Get 3 random quotes
+
+```bash curl
+curl https://quotes.jepcd.com/quotes/3
+```
+
+### Get 5 random quotes from Friends
+
+```bash curl
+curl https://quotes.jepcd.com/quotes/5?show=friends
+```
+
+### Get 10 random short quotes
+
+```bash curl
+curl https://quotes.jepcd.com/quotes/10?short=true
+```
+
+## Example response
+
+```json
+[
+  {
+    "show": "Suits",
+    "character": "Harvey Specter",
+    "text": "I'm against having emotions, not against using them."
+  },
+  {
+    "show": "Lucifer",
+    "character": "Dan Espinoza",
+    "text": "Say you fall in love with a woman who has a cat. What are you gonna do? You accept the cat."
+  },
+  {
+    "show": "Brooklyn Nine-Nine",
+    "character": "Jake",
+    "text": "Jake: I should probably get some body spray as well. What sounds better, Liquid Moan or Turnpike?\nCaptain Holt: We only have $17 to our name. We can't spend five of it on this.\nJake: I know, but I'm about to see Amy for the first time in forever, and I want to smell like a ... \"hot New Jersey breeze,\" ugh."
+  }
+]
+```
+
+## Limits
+
+Requesting more than 10 quotes will automatically be capped at 10. For example, `/quotes/50` will return a maximum of 10 quotes.
+
+## Error responses
+
+If no quotes are found matching your filters, the API returns a 404 status code:
+
+```
+No quotes found for show {show}
+```

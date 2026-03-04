@@ -1,0 +1,425 @@
+---
+title: Usage examples
+description: Real-world code examples showing how to integrate the TV Quotes API into your applications
+---
+
+This guide provides practical examples for using the TV Quotes API in different programming languages and scenarios.
+
+## Basic usage
+
+### Get a random quote
+
+<CodeGroup>
+
+```bash cURL
+curl "https://quotes.jepcd.com/quotes"
+```
+
+```javascript JavaScript (Fetch)
+const response = await fetch('https://quotes.jepcd.com/quotes');
+const quote = await response.json();
+console.log(`${quote.character}: ${quote.text}`);
+```
+
+```python Python
+import requests
+
+response = requests.get('https://quotes.jepcd.com/quotes')
+quote = response.json()
+print(f"{quote['character']}: {quote['text']}")
+```
+
+```go Go
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"net/http"
+)
+
+type Quote struct {
+	Show      string `json:"show"`
+	Character string `json:"character"`
+	Text      string `json:"text"`
+}
+
+func main() {
+	resp, _ := http.Get("https://quotes.jepcd.com/quotes")
+	defer resp.Body.Close()
+
+	var quote Quote
+	json.NewDecoder(resp.Body).Decode(&quote)
+	fmt.Printf("%s: %s\n", quote.Character, quote.Text)
+}
+```
+
+</CodeGroup>
+
+### Get multiple quotes
+
+<CodeGroup>
+
+```bash cURL
+curl "https://quotes.jepcd.com/quotes/5"
+```
+
+```javascript JavaScript (Fetch)
+const response = await fetch('https://quotes.jepcd.com/quotes/5');
+const quotes = await response.json();
+quotes.forEach(q => console.log(`[${q.show}] ${q.character}: ${q.text}`));
+```
+
+```python Python
+import requests
+
+response = requests.get('https://quotes.jepcd.com/quotes/5')
+quotes = response.json()
+for quote in quotes:
+    print(f"[{quote['show']}] {quote['character']}: {quote['text']}")
+```
+
+</CodeGroup>
+
+<Note>
+You can request up to 10 quotes at a time. Requests for more than 10 will be capped at 10.
+</Note>
+
+## Filtering examples
+
+### Get quotes from a specific show
+
+<CodeGroup>
+
+```bash cURL
+curl "https://quotes.jepcd.com/quotes?show=friends"
+```
+
+```javascript JavaScript (Fetch)
+const response = await fetch('https://quotes.jepcd.com/quotes?show=friends');
+const quote = await response.json();
+console.log(quote);
+```
+
+```python Python
+import requests
+
+response = requests.get('https://quotes.jepcd.com/quotes', params={'show': 'friends'})
+quote = response.json()
+print(quote)
+```
+
+</CodeGroup>
+
+### Get short quotes only
+
+<CodeGroup>
+
+```bash cURL
+curl "https://quotes.jepcd.com/quotes?short=true"
+```
+
+```javascript JavaScript (Fetch)
+const response = await fetch('https://quotes.jepcd.com/quotes?short=true');
+const quote = await response.json();
+console.log(quote.text);
+```
+
+```python Python
+import requests
+
+response = requests.get('https://quotes.jepcd.com/quotes', params={'short': 'true'})
+quote = response.json()
+print(quote['text'])
+```
+
+</CodeGroup>
+
+### Combine filters
+
+<CodeGroup>
+
+```bash cURL
+curl "https://quotes.jepcd.com/quotes/3?show=the%20office&short=true"
+```
+
+```javascript JavaScript (Fetch)
+const params = new URLSearchParams({
+  show: 'the office',
+  short: 'true'
+});
+const response = await fetch(`https://quotes.jepcd.com/quotes/3?${params}`);
+const quotes = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.get(
+    'https://quotes.jepcd.com/quotes/3',
+    params={'show': 'the office', 'short': 'true'}
+)
+quotes = response.json()
+```
+
+</CodeGroup>
+
+## Real-world use cases
+
+### Quote of the day widget
+
+Display a random quote on your website that refreshes daily:
+
+```javascript
+// Fetch and cache a quote for 24 hours
+async function getDailyQuote() {
+  const cached = localStorage.getItem('dailyQuote');
+  const cacheDate = localStorage.getItem('quoteDate');
+  const today = new Date().toDateString();
+
+  if (cached && cacheDate === today) {
+    return JSON.parse(cached);
+  }
+
+  const response = await fetch('https://quotes.jepcd.com/quotes?short=true');
+  const quote = await response.json();
+  
+  localStorage.setItem('dailyQuote', JSON.stringify(quote));
+  localStorage.setItem('quoteDate', today);
+  
+  return quote;
+}
+
+// Display the quote
+getDailyQuote().then(quote => {
+  document.getElementById('quote-text').textContent = quote.text;
+  document.getElementById('quote-character').textContent = 
+    `— ${quote.character}, ${quote.show}`;
+});
+```
+
+### Slack bot
+
+Create a Slack bot that posts random TV quotes:
+
+```javascript
+const { WebClient } = require('@slack/web-api');
+const fetch = require('node-fetch');
+
+const slack = new WebClient(process.env.SLACK_TOKEN);
+
+async function postRandomQuote(channel) {
+  const response = await fetch('https://quotes.jepcd.com/quotes');
+  const quote = await response.json();
+  
+  await slack.chat.postMessage({
+    channel: channel,
+    text: `*${quote.character}* (${quote.show})\n> ${quote.text}`
+  });
+}
+
+// Post every hour
+setInterval(() => postRandomQuote('#general'), 60 * 60 * 1000);
+```
+
+### Discord bot
+
+A Discord bot that responds to commands with TV quotes:
+
+```javascript
+const { Client, GatewayIntentBits } = require('discord.js');
+const fetch = require('node-fetch');
+
+const client = new Client({ 
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] 
+});
+
+client.on('messageCreate', async message => {
+  if (message.content === '!quote') {
+    const response = await fetch('https://quotes.jepcd.com/quotes');
+    const quote = await response.json();
+    
+    message.reply(`**${quote.character}** (${quote.show})\n> ${quote.text}`);
+  }
+  
+  // Quote from specific show
+  if (message.content.startsWith('!quote ')) {
+    const show = message.content.slice(7);
+    const url = `https://quotes.jepcd.com/quotes?show=${encodeURIComponent(show)}`;
+    
+    try {
+      const response = await fetch(url);
+      if (response.ok) {
+        const quote = await response.json();
+        message.reply(`**${quote.character}** (${quote.show})\n> ${quote.text}`);
+      } else {
+        message.reply(`Couldn't find quotes for "${show}"`);
+      }
+    } catch (error) {
+      message.reply('Error fetching quote!');
+    }
+  }
+});
+
+client.login(process.env.DISCORD_TOKEN);
+```
+
+### CLI tool
+
+A simple command-line tool to fetch quotes:
+
+```python
+import requests
+import sys
+import argparse
+
+def get_quote(show=None, short=False, count=1):
+    url = f"https://quotes.jepcd.com/quotes/{count}" if count > 1 else "https://quotes.jepcd.com/quotes"
+    params = {}
+    
+    if show:
+        params['show'] = show
+    if short:
+        params['short'] = 'true'
+    
+    response = requests.get(url, params=params)
+    
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print(f"Error: {response.text}", file=sys.stderr)
+        sys.exit(1)
+
+def main():
+    parser = argparse.ArgumentParser(description='Get random TV show quotes')
+    parser.add_argument('-s', '--show', help='Filter by TV show name')
+    parser.add_argument('-n', '--number', type=int, default=1, help='Number of quotes (max 10)')
+    parser.add_argument('--short', action='store_true', help='Get only short quotes')
+    
+    args = parser.parse_args()
+    
+    quotes = get_quote(show=args.show, short=args.short, count=args.number)
+    
+    if isinstance(quotes, list):
+        for quote in quotes:
+            print(f"[{quote['show']}] {quote['character']}:")
+            print(f"  {quote['text']}\n")
+    else:
+        print(f"[{quotes['show']}] {quotes['character']}:")
+        print(f"  {quotes['text']}")
+
+if __name__ == '__main__':
+    main()
+```
+
+<Tip>
+Save this as `quote.py` and run with: `python quote.py --show "breaking bad" --number 3`
+</Tip>
+
+### React component
+
+A React component that displays random quotes:
+
+```jsx
+import { useState, useEffect } from 'react';
+
+function QuoteDisplay({ show, short = false }) {
+  const [quote, setQuote] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchQuote = async () => {
+    setLoading(true);
+    const params = new URLSearchParams();
+    if (show) params.append('show', show);
+    if (short) params.append('short', 'true');
+    
+    const url = `https://quotes.jepcd.com/quotes?${params}`;
+    const response = await fetch(url);
+    const data = await response.json();
+    
+    setQuote(data);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchQuote();
+  }, [show, short]);
+
+  if (loading) return <div>Loading...</div>;
+
+  return (
+    <div className="quote-card">
+      <blockquote>"{quote.text}"</blockquote>
+      <cite>— {quote.character}, {quote.show}</cite>
+      <button onClick={fetchQuote}>New Quote</button>
+    </div>
+  );
+}
+
+export default QuoteDisplay;
+```
+
+### Twitter bot
+
+Post random quotes to Twitter/X:
+
+```javascript
+const { TwitterApi } = require('twitter-api-v2');
+const fetch = require('node-fetch');
+
+const client = new TwitterApi({
+  appKey: process.env.TWITTER_API_KEY,
+  appSecret: process.env.TWITTER_API_SECRET,
+  accessToken: process.env.TWITTER_ACCESS_TOKEN,
+  accessSecret: process.env.TWITTER_ACCESS_SECRET,
+});
+
+async function tweetRandomQuote() {
+  const response = await fetch('https://quotes.jepcd.com/quotes?short=true');
+  const quote = await response.json();
+  
+  const tweet = `"${quote.text}"\n\n— ${quote.character}, ${quote.show}`;
+  
+  // Tweet must be under 280 characters
+  if (tweet.length <= 280) {
+    await client.v2.tweet(tweet);
+    console.log('Quote tweeted successfully!');
+  } else {
+    console.log('Quote too long, trying again...');
+    await tweetRandomQuote(); // Retry with another quote
+  }
+}
+
+// Tweet every 4 hours
+setInterval(tweetRandomQuote, 4 * 60 * 60 * 1000);
+```
+
+## Error handling
+
+Always handle errors gracefully:
+
+```javascript
+async function fetchQuoteSafely(show) {
+  try {
+    const params = show ? `?show=${encodeURIComponent(show)}` : '';
+    const response = await fetch(`https://quotes.jepcd.com/quotes${params}`);
+    
+    if (!response.ok) {
+      if (response.status === 404) {
+        console.error(`No quotes found for show: ${show}`);
+        return null;
+      }
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Failed to fetch quote:', error);
+    return null;
+  }
+}
+```
+
+<Note>
+The API doesn't require authentication or rate limiting, but please use it responsibly.
+</Note>

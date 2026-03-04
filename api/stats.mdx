@@ -1,0 +1,32 @@
+---
+title: Get quote statistics
+description: Get the total number of quotes available in the database
+---
+
+Retrieve the total count of quotes available in the API.
+
+## Endpoint
+
+```
+GET /quotes/stats
+```
+
+## Response
+
+<ResponseField name="total" type="number" required>
+  The total number of quotes available in the database
+</ResponseField>
+
+## Example request
+
+```bash curl
+curl https://quotes.jepcd.com/quotes/stats
+```
+
+## Example response
+
+```json
+{
+  "total": 111173
+}
+```

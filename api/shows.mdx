@@ -1,0 +1,64 @@
+---
+title: Get available shows
+description: Retrieve a list of all TV shows available in the API
+---
+
+Get a list of all TV shows that have quotes available in the database.
+
+## Endpoint
+
+```
+GET /quotes/shows
+```
+
+## Response
+
+<ResponseField name="shows" type="string[]" required>
+  An array of TV show names available in the database
+</ResponseField>
+
+## Example request
+
+```bash curl
+curl https://quotes.jepcd.com/quotes/shows
+```
+
+## Example response
+
+```json
+{
+  "shows": [
+    "How I Met Your Mother",
+    "The Middle",
+    "New Girl",
+    "Suits",
+    "3rd Rock from the Sun",
+    "Arrested Development",
+    "Malcolm in the Middle",
+    "Monk",
+    "The Fresh Prince of Bel-Air",
+    "Parks And Recreation",
+    "Home Improvement",
+    "Cheers",
+    "Modern Family",
+    "Seinfeld",
+    "The Office",
+    "The Goldbergs",
+    "Gilmore Girls",
+    "Frasier",
+    "Breaking Bad",
+    "Scrubs",
+    "Boy Meets World",
+    "Everybody Loves Raymond",
+    "The Good Place",
+    "Brooklyn Nine-Nine",
+    "Everybody Hates Chris",
+    "Lucifer",
+    "Schitt's Creek",
+    "Derry Girls",
+    "Friends",
+    "Stranger Things",
+    "The Golden Girls"
+  ]
+}
+```

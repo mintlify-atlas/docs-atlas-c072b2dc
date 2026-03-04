@@ -1,0 +1,126 @@
+---
+title: Filtering quotes
+description: Learn how to filter quotes by TV show and quote length to get exactly what you need
+---
+
+The TV Quotes API lets you filter quotes by show name and length. This guide explains how to use the `show` and `short` query parameters to customize your results.
+
+## Filter by show
+
+Use the `show` query parameter to get quotes from a specific TV series. Show names are case-insensitive.
+
+```bash
+curl "https://quotes.jepcd.com/quotes?show=friends"
+```
+
+<Note>
+Show names are case-insensitive. `Friends`, `friends`, and `FRIENDS` all work the same way.
+</Note>
+
+### Response example
+
+```json
+{
+  "show": "Friends",
+  "character": "Chandler Bing",
+  "text": "I'm not great at the advice. Can I interest you in a sarcastic comment?"
+}
+```
+
+### Available shows
+
+You can get a list of all available shows from the `/quotes/shows` endpoint:
+
+```bash
+curl "https://quotes.jepcd.com/quotes/shows"
+```
+
+This returns an array of 30+ shows including:
+- Breaking Bad
+- Friends
+- The Office
+- Brooklyn Nine-Nine
+- Stranger Things
+- And many more
+
+## Filter by length
+
+Use the `short=true` query parameter to get only one-line quotes. This is useful when you need concise quotes that fit in limited space.
+
+```bash
+curl "https://quotes.jepcd.com/quotes?short=true"
+```
+
+### Response example
+
+```json
+{
+  "show": "Suits",
+  "character": "Harvey Specter",
+  "text": "I'm against having emotions, not against using them."
+}
+```
+
+<Tip>
+Short quotes are perfect for social media posts, notifications, or UI elements with limited space.
+</Tip>
+
+## Combine filters
+
+You can use both `show` and `short` parameters together to get one-line quotes from a specific show.
+
+```bash
+curl "https://quotes.jepcd.com/quotes?show=the%20office&short=true"
+```
+
+This returns a random short quote from The Office.
+
+## Filter with multiple quotes
+
+Filters work the same way when requesting multiple quotes. Just add the query parameters to the `/quotes/:number` endpoint:
+
+<CodeGroup>
+
+```bash Random show, any length
+curl "https://quotes.jepcd.com/quotes/3"
+```
+
+```bash Specific show
+curl "https://quotes.jepcd.com/quotes/5?show=breaking%20bad"
+```
+
+```bash Short quotes only
+curl "https://quotes.jepcd.com/quotes/5?short=true"
+```
+
+```bash Specific show, short quotes
+curl "https://quotes.jepcd.com/quotes/5?show=brooklyn%20nine-nine&short=true"
+```
+
+</CodeGroup>
+
+## How filtering works
+
+The API uses a pre-computed filtering system for O(1) performance:
+
+1. When you specify `show`, the API converts it to lowercase (e.g., `Friends` → `friends`)
+2. The filter key is built based on your parameters:
+   - `show` + `short=true` → `show:friends:short`
+   - `show` only → `show:friends`
+   - `short=true` only → `short`
+   - No filters → `all`
+3. The API uses this key to retrieve a random quote from the pre-filtered set
+
+This architecture ensures fast responses regardless of database size.
+
+## Error handling
+
+If you request a show that doesn't exist, you'll receive a 404 response:
+
+```json
+No quotes found for show nonexistent-show
+```
+
+<Note>
+Make sure to URL-encode show names with spaces. For example, `The Office` becomes `the%20office` or use `+` like `the+office`.
+</Note>

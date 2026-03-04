@@ -1,0 +1,76 @@
+---
+title: Get a random quote
+description: Retrieve a single random quote, optionally filtered by show or length
+---
+
+Get a random quote from the database. You can optionally filter by TV show and/or request only short (one-line) quotes.
+
+## Endpoint
+
+```
+GET /quotes
+```
+
+## Query parameters
+
+<ParamField query="show" type="string" optional>
+  Filter quotes by TV show name (case insensitive). If not specified, a random quote from any show is returned.
+</ParamField>
+
+<ParamField query="short" type="boolean" optional default="false">
+  If set to `true`, returns only one-line quotes. Defaults to `false`.
+</ParamField>
+
+## Response
+
+Returns a single quote object.
+
+<ResponseField name="show" type="string" required>
+  The name of the TV show
+</ResponseField>
+
+<ResponseField name="character" type="string" required>
+  The character who said the quote
+</ResponseField>
+
+<ResponseField name="text" type="string" required>
+  The quote text
+</ResponseField>
+
+## Example requests
+
+### Get any random quote
+
+```bash curl
+curl https://quotes.jepcd.com/quotes
+```
+
+### Get a random quote from Breaking Bad
+
+```bash curl
+curl https://quotes.jepcd.com/quotes?show=breaking%20bad
+```
+
+### Get a random short quote from The Office
+
+```bash curl
+curl https://quotes.jepcd.com/quotes?show=the%20office&short=true
+```
+
+## Example response
+
+```json
+{
+  "show": "Breaking Bad",
+  "character": "Water White",
+  "text": "We tried to poison you. We tried to poison you because you are an insane, degenerate piece of filth and you deserve to die."
+}
+```
+
+## Error responses
+
+If no quotes are found matching your filters, the API returns a 404 status code:
+
+```
+No quotes found for show {show}
+```
